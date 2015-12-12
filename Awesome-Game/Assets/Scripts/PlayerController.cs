@@ -10,8 +10,8 @@ public class PlayerController : MonoBehaviour {
 
     enum Direction{Left, Right};
 
-    float GrowthSpeed = 1f;
-    float EnergyLevel = 50; // used for turning, forking, or  creating leaves
+    float GrowthSpeed = 0.05f;
+    int EnergyLevel = 100; // used for turning, forking, or  creating leaves
     float SunLevel = 100;
     float WaterLevel = 100;
     float StructuralIntegrity = 100f;
@@ -100,7 +100,13 @@ public class PlayerController : MonoBehaviour {
 
     void CreateLeaf() {
         //TODO
-        Debug.Log("Created Leaf");
+        GameObject temp;
+        if (GrowthDirection == Direction.Left) {
+            temp = (GameObject)Instantiate(LeafPrefab, NextPosition + Vector3.forward, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
+            temp.transform.localScale = new Vector3(-1, 1, 1);
+        } else {
+            temp = (GameObject)Instantiate(LeafPrefab, NextPosition + Vector3.forward, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
+        }
     }
 
 	// Update is called once per frame
@@ -133,7 +139,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
     void FixedUpdate() {
-        NextPosition += this.GetGrowthAngle() * Vector3.up * this.GetGrowthSpeed() * 0.05f;
+        NextPosition += this.GetGrowthAngle() * Vector3.up * this.GetGrowthSpeed();
     }
 
     public float GetGrowthSpeed() {
