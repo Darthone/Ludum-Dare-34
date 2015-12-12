@@ -24,8 +24,8 @@ public class PlayerController : MonoBehaviour {
     int EnergySplit = 13;
     int EnergyLeaf = 20;
 
-    bool CanTurn = true;
-    bool CanLeaf = true;
+    bool CanTurn = false;
+    bool CanLeaf = false;
 
     float TurnDelay = 2f;
     float LeafDelay = 4f;
@@ -96,6 +96,8 @@ public class PlayerController : MonoBehaviour {
         GrowingAngle = getNewAngle();
         this.CurrentStem = (GameObject)Instantiate(StemPrefab, this.transform.position + Vector3.back, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
         StartCoroutine(Spliter(StemTime));
+        StartCoroutine(Reset_Leaf(LeafDelay));
+        StartCoroutine(Reset_Turn(TurnDelay));
 	}
 
     void CreateLeaf() {
