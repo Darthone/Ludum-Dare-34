@@ -2,12 +2,12 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
-public class Controller : MonoBehaviour {
+public class GameController : MonoBehaviour {
     // Singleton Game Manager class
-    public static Controller control = null;
+    public static GameController control = null;
 
     public GameObject player;
-    PlayerController pc;
+    public PlayerController pc;
     public GameObject floatingText;
 
     GUIText myGUIText;
