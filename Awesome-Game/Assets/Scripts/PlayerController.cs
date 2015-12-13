@@ -11,14 +11,14 @@ public class PlayerController : MonoBehaviour {
     enum Direction{Left, Right};
 
     float GrowthSpeed = 0.05f;
+    int StemCount = 0;
     int EnergyLevel = 100; // used for turning, forking, or  creating leaves
-    float SunLevel = 100;
-    float WaterLevel = 100;
+    int SunLevel = 100;
+    int WaterLevel = 100;
     float StructuralIntegrity = 100f;
     float Health = 100f;
     float StemTime = 6f;
     float GrowingAngle = 0f;
-    int StemCount = 0;
 
     int MaxGrowthAngle = 20;
     int EnergySplit = 13;
@@ -35,13 +35,22 @@ public class PlayerController : MonoBehaviour {
 
     // Random intial Growth Direction
     Direction GrowthDirection;
-	// Use this for initialization
 
-    void Split() {
+
+    IEnumerator Cycle(float delay) {
+        // perform calculations to reduce water and light
+        yield return new WaitForSeconds(delay);
+        WaterLevel -= 3 * StemCount;
+
+        StartCoroutine(Cycle(delay));
+    }
+
+    void Split() {  // create a new stem
         this.CurrentStem.GetComponent<Stem>().StopGrowing(); // stop growing the old one
         GrowingAngle = getNewAngle(GrowingAngle); // get a  new angle based on the directions
         // create new stem
         this.CurrentStem = (GameObject)Instantiate(StemPrefab, NextPosition + Vector3.back, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
+        this.StemCount++;
     }
 
     IEnumerator Spliter(float delay) {
@@ -98,6 +107,7 @@ public class PlayerController : MonoBehaviour {
         StartCoroutine(Spliter(StemTime));
         StartCoroutine(Reset_Leaf(LeafDelay));
         StartCoroutine(Reset_Turn(TurnDelay));
+        StartCoroutine(Cycle(8f));
 	}
 
     void CreateLeaf() {
@@ -109,6 +119,24 @@ public class PlayerController : MonoBehaviour {
         } else {
             temp = (GameObject)Instantiate(LeafPrefab, NextPosition + Vector3.forward, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
         }
+    }
+
+    public void Water(int where) {
+        switch (where) {
+            case 0:
+                // leaf
+                this.WaterLevel += 2;
+                break;
+            case 1:
+                // plant
+                this.WaterLevel += 3;
+                break;
+            case 2:
+                //ground
+                this.WaterLevel += 1;
+                break;
+        }
+        this.WaterLevel = Mathf.Clamp(this.WaterLevel, 0, this.StemCount * 15);
     }
 
 	// Update is called once per frame
