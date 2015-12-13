@@ -12,6 +12,8 @@ public class RainCloud : MonoBehaviour {
 
     IEnumerator DelayRain(float delay) {
         yield return new WaitForSeconds(delay);
+        IsRaining = !IsRaining;
+        StartCoroutine(DelayRain(delay));
     }
 
     IEnumerator DelayDrops() {
@@ -23,17 +25,25 @@ public class RainCloud : MonoBehaviour {
         StartCoroutine(DelayDrops());
     }
 
-    void CreateDrop() {
+    void OnDrawGizmos() {
+        //if (!Application.isPlaying) return;
+        Gizmos.color = Color.blue;
+        //Debug.Log(this.transform.position + Vector3.left * SpawnRange);
+        //Debug.Log(this.transform.position + Vector3.right * SpawnRange);
+        Gizmos.DrawLine(this.transform.position + Vector3.left * SpawnRange, this.transform.position + Vector3.right * SpawnRange);
+    }
 
+    void CreateDrop() {
+        Vector3 spawn = this.transform.position;
+        float x = ((float)rng.NextDouble() * 2 * SpawnRange) - SpawnRange;
+        spawn += new Vector3(x, 0f);
+        GameObject temp = (GameObject)Instantiate(RainPrefab, spawn, this.transform.rotation);
     }
 
 	// Use this for initialization
 	void Start () {
-	    StartCoroutine(DelayRain(RainDelay))
+        StartCoroutine(DelayRain(RainDelay));
+        StartCoroutine(DelayDrops());
 	}
 	
-	// Update is called once per frame
-	void FixedUpdate () {
-	    
-	}
 }
