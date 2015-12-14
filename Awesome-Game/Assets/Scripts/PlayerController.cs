@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour {
     System.Random rng = new System.Random();
@@ -8,13 +9,21 @@ public class PlayerController : MonoBehaviour {
     public GameObject LeafPrefab;
     public GameObject StemPrefab;
 
+    public Slider HealthSlider;
+    public Slider BalanceSlider;
+    public Slider WaterSlider;
+    public Slider EnergySlider;
+
     enum Direction{Left, Right};
 
     float GrowthSpeed = 0.05f;
     int StemCount = 0;
     int EnergyLevel = 100; // used for turning, forking, or  creating leaves
+    int MaxEnergyLevel = 100;
     int SunLevel = 100;
+    int MaxSunLevel = 100;
     int WaterLevel = 100;
+    int MaxWaterLevel = 100;
     float StructuralIntegrity = 100f;
     float Health = 100f;
     float StemTime = 6f;
@@ -31,6 +40,7 @@ public class PlayerController : MonoBehaviour {
     float LeafDelay = 4f;
 
     Vector3 NextPosition;
+    Vector3 StartPosition;
     GameObject CurrentStem;
 
     // Random intial Growth Direction
@@ -41,6 +51,19 @@ public class PlayerController : MonoBehaviour {
         // perform calculations to reduce water and light
         yield return new WaitForSeconds(delay);
         WaterLevel -= 3 * StemCount;
+        SunLevel -= 1 * StemCount;
+
+        float temp = WaterLevel / (float)MaxWaterLevel;
+        temp = WaterLevel / (float)MaxWaterLevel;
+        EnergyLevel += (int)(temp * 0.25f * 100); 
+        temp = SunLevel / (float)MaxSunLevel;
+        EnergyLevel += (int)(temp * 0.25f * 100);
+
+        EnergySlider.maxValue = MaxEnergyLevel;
+        WaterSlider.maxValue = MaxWaterLevel;
+        EnergySlider.value = EnergyLevel;
+        WaterSlider.value = WaterLevel;
+        //HealthSlider.maxValue = MaxEnergyLevel;
 
         StartCoroutine(Cycle(delay));
     }
@@ -51,6 +74,8 @@ public class PlayerController : MonoBehaviour {
         // create new stem
         this.CurrentStem = (GameObject)Instantiate(StemPrefab, NextPosition + Vector3.back, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
         this.StemCount++;
+        this.StructuralIntegrity -= Mathf.Abs(this.NextPosition.x - StartPosition.x) * .25f;
+        BalanceSlider.value = StructuralIntegrity;
     }
 
     IEnumerator Spliter(float delay) {
@@ -100,6 +125,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Start () {
         NextPosition = this.transform.position;
+        StartPosition = this.transform.position;
+        BalanceSlider.maxValue = 100;
         // pick a random start direction
     	GrowthDirection = (Direction)Enum.GetValues(typeof(Direction)).GetValue(rng.Next(2));
         GrowingAngle = getNewAngle();
@@ -108,7 +135,10 @@ public class PlayerController : MonoBehaviour {
         StartCoroutine(Reset_Leaf(LeafDelay));
         StartCoroutine(Reset_Turn(TurnDelay));
         StartCoroutine(Cycle(8f));
-	}
+        EnergySlider.maxValue = MaxEnergyLevel;
+        WaterSlider.maxValue = MaxWaterLevel;
+        EnergySlider.value = EnergyLevel;
+        WaterSlider.value = WaterLevel;}
 
     void CreateLeaf() {
         //TODO
@@ -136,7 +166,7 @@ public class PlayerController : MonoBehaviour {
                 this.WaterLevel += 1;
                 break;
         }
-        this.WaterLevel = Mathf.Clamp(this.WaterLevel, 0, this.StemCount * 15);
+        this.WaterLevel = Mathf.Clamp(this.WaterLevel, 0, MaxWaterLevel);
     }
 
 	// Update is called once per frame
@@ -170,6 +200,12 @@ public class PlayerController : MonoBehaviour {
 
     void FixedUpdate() {
         NextPosition += this.GetGrowthAngle() * Vector3.up * this.GetGrowthSpeed();
+        MaxWaterLevel = 100 + this.StemCount * 15;
+        MaxEnergyLevel = 100 + this.StemCount * 10;
+        MaxSunLevel = 100 + this.StemCount * 10;
+        SunLevel = Mathf.Clamp(SunLevel, 0, MaxSunLevel);
+        WaterLevel = Mathf.Clamp(WaterLevel, 0, MaxSunLevel);
+        EnergyLevel = Mathf.Clamp(EnergyLevel, 0, MaxSunLevel);
     }
 
     public float GetGrowthSpeed() {
