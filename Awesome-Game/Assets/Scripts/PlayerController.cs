@@ -167,6 +167,8 @@ public class PlayerController : MonoBehaviour {
                 break;
         }
         this.WaterLevel = Mathf.Clamp(this.WaterLevel, 0, MaxWaterLevel);
+        //Update slider
+        this.WaterSlider.value = WaterLevel;
     }
 
 	// Update is called once per frame
@@ -174,6 +176,8 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetButtonDown("Button_0")) {
             if (CanTurn && EnergyLevel >= EnergySplit) {
                 EnergyLevel -= EnergySplit;
+                //Update slider
+                this.EnergySlider.value = EnergyLevel;
                 CanTurn = false;
                 SwitchGrowthDirection(); 
                 Split();
@@ -186,6 +190,8 @@ public class PlayerController : MonoBehaviour {
         if (Input.GetButtonDown("Button_1")) {
             if (CanLeaf && EnergyLevel >= EnergyLeaf) {
                 EnergyLevel -= EnergyLeaf;
+                //Update slider
+                this.EnergySlider.value = EnergyLevel;
                 CanLeaf = false;
                 CreateLeaf();
                 StartCoroutine(Reset_Leaf(LeafDelay));
