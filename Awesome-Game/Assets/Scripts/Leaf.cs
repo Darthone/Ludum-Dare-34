@@ -14,9 +14,12 @@ public class Leaf : MonoBehaviour {
             y = -0.001f;
         else
             y = 0.001f;
+        this.transform.localScale = new Vector3(x * 100, y * 100, 1);
     }
 
 	void FixedUpdate () {
         this.transform.localScale += new Vector3(x, y, 0);	
 	}
+
+    
 }
