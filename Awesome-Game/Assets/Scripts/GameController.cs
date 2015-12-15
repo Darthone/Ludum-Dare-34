@@ -31,6 +31,10 @@ public class GameController : MonoBehaviour {
     public float maxSpawnTime = 4f;
     public float powerupChance = .20f;
 
+    Vector3 Start;
+    float journeyLength;
+    float startTime;
+
     IEnumerator IncreaseMultiplyer(float delay) {
         yield return new WaitForSeconds(delay);
         multiplyer += 0.5f + 0.05f * delay;
@@ -101,6 +105,15 @@ public class GameController : MonoBehaviour {
 
         if (Input.GetButtonDown("Mute")) {
             AudioListener.pause = !AudioListener.pause;
+        }
+        if (gameOver) {
+            float distCovered = (Time.time - startTime) * 15.0f;
+            float fracJourney = distCovered / journeyLength;
+            Camera.main.transform.position = Vector3.Lerp(Start, Vector3.zero, fracJourney);
+            if (Camera.main.transform.position == Vector3.zero){
+                FadeToBlack();
+                sceneEnding = true;
+            }
         }
     }
 
@@ -186,14 +199,16 @@ public class GameController : MonoBehaviour {
 
     public void GameOver() {
         if (!gameOver) {
+            Camera.main.orthographicSize = 55f;
+            Start = Camera.main.transform.position;
+            startTime = Time.time;
+            journeyLength = Vector3.Distance(Start, Vector3.zero);
             gameOver = true;
             AudioSource.PlayClipAtPoint(gameoverSound, this.transform.position);
-            sceneEnding = true;
-            FadeToBlack();
             myGUIText.anchor = TextAnchor.MiddleCenter;
             myGUIText.fontSize = 60;
             myGUIText.pixelOffset = new Vector2(Screen.width / 2f, Screen.height / 2f);
-            Invoke("RestartGame", 5f);
+            Invoke("RestartGame", 10f);
         }
     }
 
