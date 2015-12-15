@@ -17,7 +17,7 @@ public class Stem : MonoBehaviour {
 
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (Growing) {
+        if (Growing && !GameController.control.gameOver) {
             this.transform.localScale += new Vector3(0, pc.GetGrowthSpeed(), 0);
         } else {
             this.transform.localScale += new Vector3(0.001f, 0f, 0);
