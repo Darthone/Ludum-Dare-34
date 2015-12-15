@@ -107,7 +107,7 @@ public class GameController : MonoBehaviour {
             AudioListener.pause = !AudioListener.pause;
         }
         if (gameOver) {
-            float distCovered = (Time.time - startTime) * 15.0f;
+            float distCovered = (Time.time - startTime) * 25.0f;
             float fracJourney = distCovered / journeyLength;
             Camera.main.transform.position = Vector3.Lerp(Start, Vector3.zero, fracJourney);
             if (Camera.main.transform.position == Vector3.zero){

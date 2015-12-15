@@ -27,10 +27,10 @@ public class PlayerController : MonoBehaviour {
     int WaterLevel = 100;
     int MaxWaterLevel = 100;
     float StructuralIntegrity = 100f;
-    float Score = 0;
     float StemTime = 6f;
     float GrowingAngle = 0f;
 
+    int LeafCount = 0;
     int MaxGrowthAngle = 20;
     int EnergySplit = 13;
     int EnergyLeaf = 20;
@@ -157,8 +157,7 @@ public class PlayerController : MonoBehaviour {
             temp = (GameObject)Instantiate(LeafPrefab, NextPosition + Vector3.forward, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
         }
         //add to score for making a leaf
-        Score += 25;
-        txtScore.text = Score.ToString();
+        LeafCount++;
     }
 
     public void Water(int where) {
@@ -214,7 +213,6 @@ public class PlayerController : MonoBehaviour {
                 }
             }
         }
-        txtScore.text = this.NextPosition.y.ToString();
     }
 
     void FixedUpdate() {
@@ -226,6 +224,7 @@ public class PlayerController : MonoBehaviour {
         SunLevel = Mathf.Clamp(SunLevel, 0, MaxSunLevel);
         WaterLevel = Mathf.Clamp(WaterLevel, 0, MaxSunLevel);
         EnergyLevel = Mathf.Clamp(EnergyLevel, 0, MaxSunLevel);
+        txtScore.text = ((int)(this.NextPosition.y + 7) + 2 * StemCount + 25 * LeafCount).ToString();
     }
 
     public float GetGrowthSpeed() {
