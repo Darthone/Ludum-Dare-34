@@ -213,7 +213,7 @@ public class GameController : MonoBehaviour {
     }
 
     void RestartGame() {
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("Game");
         Destroy(this.gameObject);
     }
 }
