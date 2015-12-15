@@ -9,10 +9,12 @@ public class PlayerController : MonoBehaviour {
     public GameObject LeafPrefab;
     public GameObject StemPrefab;
 
-    public Slider HealthSlider;
+    public Slider ScoreSlider;
     public Slider BalanceSlider;
     public Slider WaterSlider;
     public Slider EnergySlider;
+
+    public Text txtScore;
 
     enum Direction{Left, Right};
 
@@ -25,7 +27,7 @@ public class PlayerController : MonoBehaviour {
     int WaterLevel = 100;
     int MaxWaterLevel = 100;
     float StructuralIntegrity = 100f;
-    float Health = 100f;
+    float Score = 0;
     float StemTime = 6f;
     float GrowingAngle = 0f;
 
@@ -154,6 +156,9 @@ public class PlayerController : MonoBehaviour {
         } else {
             temp = (GameObject)Instantiate(LeafPrefab, NextPosition + Vector3.forward, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
         }
+        //add to score for making a leaf
+        Score += 25;
+        txtScore.text = Score.ToString();
     }
 
     public void Water(int where) {
@@ -209,7 +214,8 @@ public class PlayerController : MonoBehaviour {
                 }
             }
         }
-	}
+        txtScore.text = this.NextPosition.y.ToString();
+    }
 
     void FixedUpdate() {
         if (!GameController.control.gameOver)
