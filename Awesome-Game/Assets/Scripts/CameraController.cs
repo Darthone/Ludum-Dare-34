@@ -10,6 +10,7 @@ public class CameraController : MonoBehaviour {
     }
 
     void FixedUpdate (){
-        this.transform.position = offset + pc.GetNextPosition(); 
+        if(!GameController.control.gameOver)
+            this.transform.position = offset + pc.GetNextPosition(); 
     }
 }
