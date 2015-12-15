@@ -69,12 +69,16 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Split() {  // create a new stem
+        if( WaterLevel == 0 || StructuralIntegrity <= 0f){
+            GameController.control.GameOver();
+            return;
+        }
         this.CurrentStem.GetComponent<Stem>().StopGrowing(); // stop growing the old one
         GrowingAngle = getNewAngle(GrowingAngle); // get a  new angle based on the directions
         // create new stem
         this.CurrentStem = (GameObject)Instantiate(StemPrefab, NextPosition + Vector3.back, Quaternion.AngleAxis(GrowingAngle, Vector3.forward));
         this.StemCount++;
-        this.StructuralIntegrity -= Mathf.Abs(this.NextPosition.x - StartPosition.x) * .25f;
+        this.StructuralIntegrity -= Mathf.Abs(this.NextPosition.x - StartPosition.x) * .35f;
         BalanceSlider.value = StructuralIntegrity;
     }
 
@@ -138,7 +142,8 @@ public class PlayerController : MonoBehaviour {
         EnergySlider.maxValue = MaxEnergyLevel;
         WaterSlider.maxValue = MaxWaterLevel;
         EnergySlider.value = EnergyLevel;
-        WaterSlider.value = WaterLevel;}
+        WaterSlider.value = WaterLevel;
+    }
 
     void CreateLeaf() {
         //TODO
@@ -173,39 +178,42 @@ public class PlayerController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetButtonDown("Button_0")) {
-            if (CanTurn && EnergyLevel >= EnergySplit) {
-                EnergyLevel -= EnergySplit;
-                //Update slider
-                this.EnergySlider.value = EnergyLevel;
-                CanTurn = false;
-                SwitchGrowthDirection(); 
-                Split();
-                StartCoroutine(Reset_Turn(TurnDelay));
-            } else {
-                Debug.Log("ADD a Sound to not being able to turn");
-                //TODO Play sound
+        if (!GameController.control.gameOver) {
+            if (Input.GetButtonDown("Button_0")) {
+                if (CanTurn && EnergyLevel >= EnergySplit) {
+                    EnergyLevel -= EnergySplit;
+                    //Update slider
+                    this.EnergySlider.value = EnergyLevel;
+                    CanTurn = false;
+                    SwitchGrowthDirection();
+                    Split();
+                    StartCoroutine(Reset_Turn(TurnDelay));
+                }
+                else {
+                    Debug.Log("ADD a Sound to not being able to turn");
+                    //TODO Play sound
+                }
+            }
+            if (Input.GetButtonDown("Button_1")) {
+                if (CanLeaf && EnergyLevel >= EnergyLeaf) {
+                    EnergyLevel -= EnergyLeaf;
+                    //Update slider
+                    this.EnergySlider.value = EnergyLevel;
+                    CanLeaf = false;
+                    CreateLeaf();
+                    StartCoroutine(Reset_Leaf(LeafDelay));
+                }
+                else {
+                    Debug.Log("ADD a Sound to not being able to Leaf");
+                    //TODO Play sound
+                }
             }
         }
-        if (Input.GetButtonDown("Button_1")) {
-            if (CanLeaf && EnergyLevel >= EnergyLeaf) {
-                EnergyLevel -= EnergyLeaf;
-                //Update slider
-                this.EnergySlider.value = EnergyLevel;
-                CanLeaf = false;
-                CreateLeaf();
-                StartCoroutine(Reset_Leaf(LeafDelay));
-            } else {
-                Debug.Log("ADD a Sound to not being able to Leaf");
-                //TODO Play sound
-            }
-        }
-
- 
 	}
 
     void FixedUpdate() {
-        NextPosition += this.GetGrowthAngle() * Vector3.up * this.GetGrowthSpeed();
+        if (!GameController.control.gameOver)
+            NextPosition += this.GetGrowthAngle() * Vector3.up * this.GetGrowthSpeed();
         MaxWaterLevel = 100 + this.StemCount * 15;
         MaxEnergyLevel = 100 + this.StemCount * 10;
         MaxSunLevel = 100 + this.StemCount * 10;
@@ -229,10 +237,4 @@ public class PlayerController : MonoBehaviour {
     public int GetStemCount(){
         return this.StemCount;
     }   
-
-    bool CheckPlant() {
-        // check and update health and other stats
-        // ends the game if needed
-        return true;
-    }
 }
